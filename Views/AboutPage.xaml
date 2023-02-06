@@ -5,6 +5,9 @@
              x:Class="FlyoutPageDemoMaui.Views.AboutPage"
              x:DataType="models:About"
              Title="AboutPage">
+    <ContentPage.BindingContext>
+        <models:About />
+    </ContentPage.BindingContext>
     <VerticalStackLayout Spacing="10"
                          Margin="10">
         <HorizontalStackLayout Spacing="10">
