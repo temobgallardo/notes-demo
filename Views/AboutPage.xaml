@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:FlyoutPageDemoMaui.Models"
              x:Class="FlyoutPageDemoMaui.Views.AboutPage"
+             x:DataType="models:About"
              Title="AboutPage">
     <VerticalStackLayout Spacing="10"
                          Margin="10">
@@ -11,15 +13,15 @@
                    HeightRequest="64" />
             <Label FontSize="22"
                    FontAttributes="Bold"
-                   Text="Notes"
+                   Text="{Binding Title}"
                    VerticalOptions="End" />
             <Label FontSize="22"
-                   Text="v1.0"
+                   Text="{Binding Version}"
                    VerticalOptions="End" />
         </HorizontalStackLayout>
 
-        <Label Text="This app is written in XAML and C# with .NET MAUI." />
-        <Button Text="Learn more..."
+        <Label Text="{Binding Message}" />
+        <Button Text="{Binding MoreInfoUrl}"
                 Clicked="LearnMore_Clicked" />
     </VerticalStackLayout>
 </ContentPage>
