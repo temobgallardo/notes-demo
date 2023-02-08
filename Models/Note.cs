@@ -1,10 +1,16 @@
-﻿namespace FlyoutPageDemoMaui.Models;
+﻿using FlyoutPageDemoMaui.ViewModels;
 
-public class Note
+namespace FlyoutPageDemoMaui.Models;
+
+public class Note : BindableBase
 {
-  public string FileName { get; set; }
+  private string _fileName;
+  private string _text;
+  private DateTime _date;
 
-  public string Text { get; set; }
+  public string FileName { get => _fileName; set => SetProperty(ref _fileName, value); }
 
-  public DateTime Date { get; set; }
+  public string Text { get => _text; set => SetProperty(ref _text, value); }
+
+  public DateTime Date { get => _date; set => SetProperty(ref _date, value); }
 }
