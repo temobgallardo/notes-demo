@@ -1,4 +1,5 @@
-﻿using FlyoutPageDemoMaui.Views;
+﻿using FlyoutPageDemoMaui.ViewModels;
+using FlyoutPageDemoMaui.Views;
 
 namespace FlyoutPageDemoMaui;
 
@@ -8,6 +9,6 @@ public partial class AppShell : Shell
 	{
 		InitializeComponent();
 
-		Routing.RegisterRoute(nameof(NotePage), typeof(NotePage));
+		Routing.RegisterRoute(nameof(NoteViewModel), typeof(NotePage));
 	}
 }

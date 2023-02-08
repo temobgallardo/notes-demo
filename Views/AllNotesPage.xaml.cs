@@ -24,16 +24,10 @@ public partial class AllNotesPage : ContentPage
     if (e.CurrentSelection.Count > 0)
     {
       var note = (Note)e.CurrentSelection[0];
-
-      await Shell.Current.GoToAsync($"{nameof(NotePage)}?{nameof(NoteViewModel.ItemId)}={note.FileName}");
+      await Shell.Current.GoToAsync($"{nameof(NoteViewModel)}?{nameof(NoteViewModel.ItemId)}={note.FileName}");
 
       // Unselected the UI
       notesCollection.SelectedItem = null;
     }
-  }
-
-  private async void Add_Clicked(object sender, EventArgs e)
-  {
-    await Shell.Current.GoToAsync(nameof(NotePage), animate: true);
   }
 }

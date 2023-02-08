@@ -9,7 +9,7 @@
     <!-- Add an item to the toolbar -->
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Add"
-                     Clicked="Add_Clicked"
+                     Command="{Binding AddNoteCommand}"
                      IconImageSource="{FontImage Glyph='+', Color=White, Size=22}" />
     </ContentPage.ToolbarItems>
 
@@ -19,7 +19,8 @@
                         ItemsSource="{Binding Notes}"
                         Margin="20"
                         SelectionMode="Single"
-                        SelectionChanged="NotesCollection_SelectionChanged">
+                        SelectionChanged="NotesCollection_SelectionChanged"
+                        SelectedItem="{Binding SelectedNote}" >
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Vertical"
                                    ItemSpacing="10" />
