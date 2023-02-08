@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:FlyoutPageDemoMaui.ViewModels"
+             xmlns:models="clr-namespace:FlyoutPageDemoMaui.Models"
+             x:Class="FlyoutPageDemoMaui.Views.AllNotesPage"
+             x:DataType="viewmodels:AllNotesViewModel"
+             Title="All Notes">
+    <!-- Add an item to the toolbar -->
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Add"
+                     Clicked="Add_Clicked"
+                     IconImageSource="{FontImage Glyph='+', Color=White, Size=22}" />
+    </ContentPage.ToolbarItems>
+
+    <RefreshView Command="{Binding RefreshNotesCommand}"
+                 IsRefreshing="{Binding IsRefreshing}">
+        <CollectionView x:Name="notesCollection"
+                        ItemsSource="{Binding Notes}"
+                        Margin="20"
+                        SelectionMode="Single"
+                        SelectionChanged="NotesCollection_SelectionChanged">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical"
+                                   ItemSpacing="10" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Note">
+                    <!--TODO: figure out why ViewCell is throwing a cast invalid exception-->
+                    <!--<ViewCell>
+                    <StackLayout>
+                        <Label Text="{Binding Text}"
+                               FontSize="22" />
+                        <Label Text="{Binding Date}"
+                               FontSize="14"
+                               TextColor="Silver" />
+                    </StackLayout>
+                </ViewCell>-->
+                    <StackLayout>
+                        <Label Text="{Binding Text}"
+                               FontSize="22" />
+                        <Label Text="{Binding Date}"
+                               FontSize="14"
+                               TextColor="Silver" />
+                    </StackLayout>
+                </DataTemplate>
+
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </RefreshView>
+</ContentPage>
