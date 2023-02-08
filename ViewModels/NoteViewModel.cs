@@ -3,25 +3,32 @@ using FlyoutPageDemoMaui.Models;
 
 namespace FlyoutPageDemoMaui.ViewModels;
 
+[QueryProperty(nameof(ItemId), nameof(ItemId))]
 public class NoteViewModel : ViewModelBase
 {
   public const string DefaultFileName = "notes.txt";
 
   private Note _model;
-  readonly string _fileName = Path.Combine(FileSystem.AppDataDirectory, DefaultFileName);
+
+  public string ItemId { set => LoadNote(value); }
 
   public NoteViewModel()
   {
     // TODO: Load from db
-    if (File.Exists(Model.FileName))
+    if (File.Exists(Model?.FileName))
     {
       Model.Text = File.ReadAllText(Model.FileName);
     }
+
+    string appDataPath = FileSystem.AppDataDirectory;
+    string ramdomFileName = $"{Path.GetRandomFileName()}.notes.txt";
+
+    LoadNote(Path.Combine(appDataPath, ramdomFileName));
   }
 
-  public ICommand SaveCommand => new Command(async () => await Save());
+  public ICommand SaveCommand => new Command(async () => await SaveAsync());
 
-  public ICommand DeleteCommand => new Command(async () => await Delete());
+  public ICommand DeleteCommand => new Command(async () => await DeleteAsync());
 
   public Note Model
   {
@@ -39,39 +46,47 @@ public class NoteViewModel : ViewModelBase
     }
   }
 
+  private async Task SaveAsync()
+  {
+    await Save();
+    await Shell.Current.GoToAsync("..");
+  }
+
   private Task Save()
   {
-    // TODO: [DB] add to DB (LiteDb) 
+    // TODO: [DB] add to DB (LiteDb)
     var tcs = new TaskCompletionSource();
 
     try
     {
-      File.WriteAllText(_fileName, Model.Text);
+      File.WriteAllText(Model.FileName, Model.Text);
       tcs.TrySetResult();
     }
     catch (Exception ex)
     {
       tcs.SetException(ex);
     }
-    finally
-    {
-      tcs.SetCanceled();
-    }
 
     return tcs.Task;
   }
 
+  private async Task DeleteAsync()
+  {
+    await Delete();
+    await Shell.Current.GoToAsync("..");
+  }
+
   private Task Delete()
   {
-    // TODO: [DB] Delete from DB (LiteDb) 
+    // TODO: [DB] Delete from DB (LiteDb)
 
     var tcs = new TaskCompletionSource();
 
     try
     {
-      if (File.Exists(_fileName))
+      if (File.Exists(Model.FileName))
       {
-        File.Delete(_fileName);
+        File.Delete(Model.FileName);
       }
 
       Model.Text = string.Empty;
@@ -82,11 +97,23 @@ public class NoteViewModel : ViewModelBase
     {
       tcs.TrySetException(e);
     }
-    finally
-    {
-      tcs.SetCanceled();
-    }
 
     return tcs.Task;
+  }
+
+  private void LoadNote(string fileName)
+  {
+    Model = new Note
+    {
+      FileName = fileName
+    };
+
+    if (File.Exists(fileName))
+    {
+      Model.Date = File.GetCreationTime(fileName);
+      Model.Text = File.ReadAllText(fileName);
+    }
+
+    // Refresh the Model property
   }
 }
