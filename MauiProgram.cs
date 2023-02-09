@@ -19,6 +19,14 @@ public static class MauiProgram
 		builder.Logging.AddDebug();
 #endif
 
+		RegisterEssentials(builder);
+
 		return builder.Build();
+	}
+
+	private static void RegisterEssentials(MauiAppBuilder builder)
+	{
+		// TODO: Register Essentials here
+		//builder.Services.AddSingleton<IGeolocation>(ctx => Geolocation.Default);
 	}
 }
