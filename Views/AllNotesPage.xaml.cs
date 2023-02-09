@@ -1,4 +1,3 @@
-using FlyoutPageDemoMaui.Models;
 using FlyoutPageDemoMaui.ViewModels;
 
 namespace FlyoutPageDemoMaui.Views;
