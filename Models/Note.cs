@@ -8,6 +8,8 @@ public class Note : BindableBase
   private string _text;
   private DateTime _date;
 
+  public int Id { get; set; }
+
   public string FileName { get => _fileName; set => SetProperty(ref _fileName, value); }
 
   public string Text { get => _text; set => SetProperty(ref _text, value); }
