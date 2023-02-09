@@ -29,8 +29,11 @@ public class AllNotesViewModel : ViewModelBase
     set
     {
       SetProperty(ref _selectedNote, value);
-      // TODO: this n. avigation is not working properly, the app needs to go to the OnPause state to show it It may need to be executed on main thread
-      //Task.Run(async () => await Shell.Current.GoToAsync($"{nameof(NoteViewModel)}?{nameof(NoteViewModel.ItemId)}={value.FileName}"));
+
+      if (value != null)
+      {
+        ViewModelBase.OnMainThread(async () => await Shell.Current.GoToAsync($"{nameof(NoteViewModel)}?{nameof(NoteViewModel.ItemId)}={value.FileName}"));
+      }
     }
   }
 

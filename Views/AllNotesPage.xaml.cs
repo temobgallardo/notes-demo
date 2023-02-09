@@ -23,9 +23,6 @@ public partial class AllNotesPage : ContentPage
   {
     if (e.CurrentSelection.Count > 0)
     {
-      var note = (Note)e.CurrentSelection[0];
-      await Shell.Current.GoToAsync($"{nameof(NoteViewModel)}?{nameof(NoteViewModel.ItemId)}={note.FileName}");
-
       // Unselected the UI
       notesCollection.SelectedItem = null;
     }
