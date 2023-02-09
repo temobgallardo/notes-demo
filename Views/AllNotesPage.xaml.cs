@@ -18,8 +18,7 @@ public partial class AllNotesPage : ContentPage
     Model.LoadNotes();
   }
 
-  // TODO: move this to the VM
-  private async void NotesCollection_SelectionChanged(object sender, SelectionChangedEventArgs e)
+  private void NotesCollection_SelectionChanged(object sender, SelectionChangedEventArgs e)
   {
     if (e.CurrentSelection.Count > 0)
     {
