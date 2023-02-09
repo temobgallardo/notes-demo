@@ -1,7 +1,19 @@
-﻿namespace FlyoutPageDemoMaui.ViewModels;
+﻿
 
-public class ViewModelBase : BindableBase, IDisposable
+namespace FlyoutPageDemoMaui.ViewModels;
+
+public abstract class ViewModelBase : BindableBase, IDisposable
 {
+
+  protected ViewModelBase()
+  {
+
+  }
+
+  // TODO: Inject MainThread for Unit Testing
+  protected static void OnMainThread(Func<Task> function) => MainThread.BeginInvokeOnMainThread(async () => await function());
+
+  #region Dispose
   private bool disposedValue;
 
   protected virtual void Dispose(bool disposing)
@@ -32,4 +44,5 @@ public class ViewModelBase : BindableBase, IDisposable
     Dispose(disposing: true);
     GC.SuppressFinalize(this);
   }
+  #endregion
 }
