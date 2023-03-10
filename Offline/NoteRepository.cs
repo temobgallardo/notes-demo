@@ -1,49 +1,48 @@
 ﻿using FlyoutPageDemoMaui.Models;
+using LiteDB;
 using LiteDB.Async;
 
 namespace FlyoutPageDemoMaui.Offline;
 
 public class NoteRepository : INoteRepository
 {
-  
   public const string DbLocation = "offlineNotes.db";
   private const string DbPassword = "password";
 
-  private LiteDatabaseAsync _database;
+  private static Lazy<LiteDatabase> LazyDatabase => new(
+    () => CreateDatabase(Path.Combine(FileSystem.AppDataDirectory, DbLocation), DbPassword));
+  private static LiteDatabase Database => LazyDatabase.Value;
 
   public NoteRepository()
   {
-    var databaseLocation = Path.Combine(FileSystem.AppDataDirectory, DbLocation);
-    Task.Run(async () => _database = await CreateDatabaseAsync(databaseLocation, DbPassword));
   }
 
-  public async Task<bool> DeleteNoteAsync(int id) => await _database.GetCollection<Note>().DeleteAsync(id);
+  public async Task<bool> DeleteNoteAsync(int id) => Database.GetCollection<Note>().Delete(id);
 
-  public async Task<Note> GetNoteAsync(int id) => await _database.GetCollection<Note>().Query().Where(n => n.Id == id).FirstAsync();
+  public async Task<Note> GetNoteAsync(int id) => Database.GetCollection<Note>().Query().Where(n => n.Id == id).First();
 
   public async Task<bool> SaveAsync(Note note)
   {
-    var notes = _database.GetCollection<Note>();
+    var notes = Database.GetCollection<Note>();
     note.LastUpdatedDate = DateTime.UtcNow;
-    await notes.UpsertAsync(note);
-    return true;
+    return notes.Upsert(note);
   }
 
-  public async Task<IEnumerable<Note>> GetNotesAsync() => await _database.GetCollection<Note>().Query().OrderByDescending(n => n.Date).ToListAsync();
+  public async Task<IEnumerable<Note>> GetNotesAsync() => Database.GetCollection<Note>().Query().OrderByDescending(n => n.Date).ToList();
   
-  private static async Task<LiteDatabaseAsync> CreateDatabaseAsync(string filename, string password)
+  private static LiteDatabase CreateDatabase(string filename, string password)
   {
-    var db = new LiteDatabaseAsync($"FileName={filename};Password={password}")
+    var db = new LiteDatabase($"FileName={filename};Password={password}")
     {
       CheckpointSize = 500
     };
 
-    await db.PragmaAsync(LiteDB.Engine.Pragmas.TIMEOUT, 60);
+    db.Pragma(LiteDB.Engine.Pragmas.TIMEOUT, 60);
 
     var collection = db.GetCollection<Note>();
 
     // Creating index.
-    await collection.EnsureIndexAsync(c => c.Id);
+    collection.EnsureIndex(c => c.Id);
 
     return db;
   }
