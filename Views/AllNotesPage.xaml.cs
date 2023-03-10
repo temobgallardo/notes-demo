@@ -4,17 +4,20 @@ namespace FlyoutPageDemoMaui.Views;
 
 public partial class AllNotesPage : ContentPage
 {
-  public AllNotesPage()
+  public AllNotesPage(AllNotesViewModel vm)
   {
     InitializeComponent();
 
-    BindingContext = new AllNotesViewModel();
+    // The handler may be null if done this way you need to manage that situations.
+    // The other way to inject is using the Shell Routing method to inject the vm
+    //var repository = this.Handler.MauiContext.Services.GetService<INoteRepository>();
+    BindingContext = vm;
   }
 
   protected override void OnAppearing()
   {
-    var Model = BindingContext as AllNotesViewModel;
-    Model.LoadNotes();
+    var Model = BindingContext as ILifeCycleAware;
+    Model.OnAppearing();
   }
 
   private void NotesCollection_SelectionChanged(object sender, SelectionChangedEventArgs e)

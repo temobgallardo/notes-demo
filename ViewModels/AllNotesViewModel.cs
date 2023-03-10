@@ -1,27 +1,23 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
+using FlyoutPageDemoMaui.Extensions;
 using FlyoutPageDemoMaui.Models;
+using FlyoutPageDemoMaui.Offline;
+using Microsoft.Extensions.Logging;
 
 namespace FlyoutPageDemoMaui.ViewModels;
 
-public class AllNotesViewModel : ViewModelBase
+public class AllNotesViewModel : RefreshableViewModel, ILifeCycleAware
 {
-  private bool _isRefreshing = true;
   private Note _selectedNote;
 
   public ObservableCollection<Note> Notes { get; set; } = new ObservableCollection<Note>();
 
-  public AllNotesViewModel() => LoadNotes();
+  public AllNotesViewModel(INoteRepository repository, ILogger<AllNotesViewModel> logger) : base(repository, logger) => LoadNotes();
 
   public ICommand RefreshNotesCommand => new Command(LoadNotes, () => IsRefreshing);
 
   public ICommand AddNoteCommand => new Command(async () => await AddNote());
-
-  public bool IsRefreshing
-  {
-    get => _isRefreshing;
-    set => SetProperty(ref _isRefreshing, value);
-  }
 
   public Note SelectedNote
   {
@@ -32,33 +28,21 @@ public class AllNotesViewModel : ViewModelBase
 
       if (value != null)
       {
-        ViewModelBase.OnMainThread(async () => await Shell.Current.GoToAsync($"{nameof(NoteViewModel)}?{nameof(NoteViewModel.ItemId)}={value.FileName}"));
+        OnMainThread(async () => await Shell.Current.GoToAsync($"{nameof(NoteViewModel)}?{nameof(NoteViewModel.ItemId)}={value.Id}"));
       }
     }
   }
 
-  public void LoadNotes()
+  public void LoadNotes() => ExecWhileRefreshing(async () =>
   {
-    IsRefreshing = true;
-    Notes.Clear();
+    var notes = await Repository.GetNotesAsync();
+    Notes.ClearAndAddRange(notes);
+  });
 
-    string appDataPath = FileSystem.AppDataDirectory;
-    IEnumerable<Note> notes = Directory.
-      EnumerateFiles(appDataPath, "*.notes.txt")
-      .Select(filename => new Note()
-      {
-        FileName = filename,
-        Date = File.GetCreationTime(filename),
-        Text = File.ReadAllText(filename)
-      })
-      .OrderBy(note => note.Date);
+  public new void OnAppearing() => LoadNotes();
 
-    foreach (var note in notes)
-    {
-      Notes.Add(note);
-    }
-
-    IsRefreshing = false;
+  public void OnDisappearing()
+  {
   }
 
   private async Task AddNote() => await Shell.Current.GoToAsync(nameof(NoteViewModel), animate: true);
