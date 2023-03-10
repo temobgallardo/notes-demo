@@ -23,6 +23,4 @@ public class RefreshableViewModel : ViewModelBase, IIsRefreshable
     action();
     IsRefreshing = false;
   }
-
-  public override void OnAppearing() { }
 }
