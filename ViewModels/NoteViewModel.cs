@@ -1,5 +1,7 @@
 ﻿using System.Windows.Input;
 using FlyoutPageDemoMaui.Models;
+using FlyoutPageDemoMaui.Offline;
+using Microsoft.Extensions.Logging;
 
 namespace FlyoutPageDemoMaui.ViewModels;
 
@@ -8,22 +10,12 @@ public class NoteViewModel : ViewModelBase
 {
   public const string DefaultFileName = "notes.txt";
 
-  private Note _model;
+  private Note _model = new();
 
-  public string ItemId { set => LoadNote(value); }
+  public int ItemId { set => Task.Run(async () => await LoadNote(value)); }
 
-  public NoteViewModel()
+  public NoteViewModel(INoteRepository repository, ILogger<NoteViewModel> logger) : base(repository, logger)
   {
-    // TODO: Load from db
-    if (File.Exists(Model?.FileName))
-    {
-      Model.Text = File.ReadAllText(Model.FileName);
-    }
-
-    string appDataPath = FileSystem.AppDataDirectory;
-    string ramdomFileName = $"{Path.GetRandomFileName()}.notes.txt";
-
-    LoadNote(Path.Combine(appDataPath, ramdomFileName));
   }
 
   public ICommand SaveCommand => new Command(async () => await SaveAsync());
@@ -46,74 +38,26 @@ public class NoteViewModel : ViewModelBase
     }
   }
 
-  private async Task SaveAsync()
+  private async Task SaveAsync() => await this.ExecAndHandleExceptionAsync(async () =>
   {
-    await Save();
+    Model.FileName = $"{Path.GetRandomFileName()}.notes.txt";
+    await Repository.SaveAsync(Model);
     await Shell.Current.GoToAsync("..");
-  }
+  });
 
-  private Task Save()
+  private async Task DeleteAsync() => await this.ExecAndHandleExceptionAsync(async () =>
   {
-    // TODO: [DB] add to DB (LiteDb)
-    var tcs = new TaskCompletionSource();
+    await Repository.DeleteNoteAsync(Model.Id);
 
-    try
-    {
-      File.WriteAllText(Model.FileName, Model.Text);
-      tcs.TrySetResult();
-    }
-    catch (Exception ex)
-    {
-      tcs.SetException(ex);
-    }
+    Model.Text = string.Empty;
 
-    return tcs.Task;
-  }
-
-  private async Task DeleteAsync()
-  {
-    await Delete();
+    this.RaisePropertyChanged(nameof(Model));
     await Shell.Current.GoToAsync("..");
-  }
+  });
 
-  private Task Delete()
+  private async Task LoadNote(int id) => await this.ExecAndHandleExceptionAsync(async () =>
   {
-    // TODO: [DB] Delete from DB (LiteDb)
-
-    var tcs = new TaskCompletionSource();
-
-    try
-    {
-      if (File.Exists(Model.FileName))
-      {
-        File.Delete(Model.FileName);
-      }
-
-      Model.Text = string.Empty;
-
-      tcs.TrySetResult();
-    }
-    catch (Exception e)
-    {
-      tcs.TrySetException(e);
-    }
-
-    return tcs.Task;
-  }
-
-  private void LoadNote(string fileName)
-  {
-    Model = new Note
-    {
-      FileName = fileName
-    };
-
-    if (File.Exists(fileName))
-    {
-      Model.Date = File.GetCreationTime(fileName);
-      Model.Text = File.ReadAllText(fileName);
-    }
-
-    // Refresh the Model property
-  }
+    Model = await Repository.GetNoteAsync(id);
+    this.RaisePropertyChanged(nameof(Model));
+  });
 }
