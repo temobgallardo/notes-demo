@@ -18,6 +18,9 @@ public partial class App : Application
 
   protected override void OnStart()
   {
-    MauiProgram.Container.Services.GetService<INoteRepository>().Rebuild();
+    // Will this fail on other platforms?
+    //MauiProgram.Container.Services.GetService<INoteRepository>().Rebuild();
+    // This one get the current ioc service provider given the platform we are on feel more secure
+    ServiceProvider.GetService<INoteRepository>().Rebuild();
   }
 }
