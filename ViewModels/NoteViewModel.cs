@@ -41,6 +41,7 @@ public class NoteViewModel : ViewModelBase
   private async Task SaveAsync() => await this.ExecAndHandleExceptionAsync(async () =>
   {
     Model.FileName = $"{Path.GetRandomFileName()}.notes.txt";
+    Model.Date = DateTime.Now.ToUniversalTime();
     await Repository.SaveAsync(Model);
     await Shell.Current.GoToAsync("..");
   });
