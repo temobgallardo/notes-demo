@@ -2,8 +2,5 @@
 
 public interface IRepositoryManager
 {
-  void Initialize();
-
-  void Backup();
-
+  void BackupAndRebuild();
 }
