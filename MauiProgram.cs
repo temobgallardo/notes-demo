@@ -7,6 +7,8 @@ namespace FlyoutPageDemoMaui;
 
 public static class MauiProgram
 {
+  public static MauiApp Container;
+
   public static MauiApp CreateMauiApp()
   {
     var builder = MauiApp.CreateBuilder();
@@ -55,7 +57,7 @@ public static class MauiProgram
 
     RegisterEssentials(builder);
 
-    return builder
+    return Container = builder
       .RegisterView()
       .RegisterViewModels()
       .RegisterAppServices()
@@ -90,7 +92,7 @@ public static class MauiProgram
   public static MauiAppBuilder RegisterAppServices(this MauiAppBuilder self)
   {
     self.Services.AddSingleton<INoteRepository, NoteRepository>();
-    self.Services.AddLogging();
+    self.Services.AddSingleton<IRepositoryManager, RepositoryManager>();
     return self;
   }
 }
