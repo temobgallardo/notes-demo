@@ -30,6 +30,17 @@ public class NoteRepository : INoteRepository
 
   public async Task<IEnumerable<Note>> GetNotesAsync() => Database.GetCollection<Note>().Query().OrderByDescending(n => n.Date).ToList();
   
+  public async Task Rebuild()
+  {
+    //You can't simply copy the file while it's open by LiteDB. You have to make sure the file is closed and that the log file is empty by running db.Checkpoint() before copying the file.
+    Database.Checkpoint();
+
+    // TODO: Create db backup. Making copies of the datafile should be fine for most purposes.
+    await DatabaseBackupSystem.StartBackup(Path.Combine(FileSystem.AppDataDirectory, DbLocation));
+
+    Database.Rebuild(); //TODO: Check if rebuild worked and if not make use of backup
+  }
+
   private static LiteDatabase CreateDatabase(string filename, string password)
   {
     var db = new LiteDatabase($"FileName={filename};Password={password}")

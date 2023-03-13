@@ -11,4 +11,6 @@ public interface INoteRepository
   Task<bool> SaveAsync(Note note);
 
   Task<IEnumerable<Note>> GetNotesAsync();
+
+  Task Rebuild();
 }
