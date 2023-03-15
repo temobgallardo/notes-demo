@@ -1,6 +1,8 @@
-﻿namespace FlyoutPageDemoMaui.Models;
+﻿using MetroLog.Maui;
 
-public class About
+namespace FlyoutPageDemoMaui.Models;
+
+public class About : LogController
 {
   public string Title => AppInfo.Name;
 

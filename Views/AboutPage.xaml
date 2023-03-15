@@ -26,5 +26,20 @@
         <Label Text="{Binding Message}" />
         <Button Text="{Binding MoreInfoUrl}"
                 Clicked="LearnMore_Clicked" />
+
+        <Grid ColumnDefinitions="Auto,*">
+            <HorizontalStackLayout HorizontalOptions="Fill"
+                                   Spacing="10">
+                <Switch IsToggled="{Binding IsShakeEnabled}" />
+                <Label Text="Shake to show logs!"
+                       VerticalOptions="Center"
+                       VerticalTextAlignment="Center" />
+            </HorizontalStackLayout>
+            <Button Text="Show Logs"
+                    Grid.Column="1"
+                    HorizontalOptions="End"
+                    VerticalOptions="Center"
+                    Command="{Binding GoToLogsPageCommand}" />
+        </Grid>
     </VerticalStackLayout>
 </ContentPage>
