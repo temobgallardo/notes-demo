@@ -2,5 +2,6 @@
 
 public interface IRepositoryManager
 {
-  void BackupAndRebuild();
+  Task BackupAndRebuild();
+  Task DoInterruptedOperationAsync(Func<Task> func);
 }
