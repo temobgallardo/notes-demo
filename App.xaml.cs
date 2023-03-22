@@ -1,4 +1,5 @@
 ﻿using FlyoutPageDemoMaui.Offline;
+using MetroLog;
 using MetroLog.Maui;
 
 namespace FlyoutPageDemoMaui;
@@ -19,8 +20,8 @@ public partial class App : Application
   protected override void OnStart()
   {
     // Will this fail on other platforms?
-    //MauiProgram.Container.Services.GetService<INoteRepository>().Rebuild();
-    // This one get the current ioc service provider given the platform we are on feel more secure
-    ServiceProvider.GetService<INoteRepository>().Rebuild();
+    // MauiProgram.Container.Services.GetService<INoteRepository>().Rebuild();
+    // This one get the current ioc service provider given the platform. It feels more secure
+    ServiceProvider.GetService<IRepositoryManager>().BackupAndRebuild();
   }
 }
