@@ -1,22 +1,19 @@
-﻿namespace FlyoutPageDemoMaui.Offline;
+﻿using System.Reactive.Linq;
+
+namespace FlyoutPageDemoMaui.Offline;
 
 public static class DatabaseBackupSystem
 {
-  public static async Task StartBackup(string dbLocation)
+  public const string dbBackupSuffix = "-backup.odb";
+
+  public static async Task StartBackup(string dbLocation, string dbBackupLocation)
   {
-    var directory = Directory.GetParent(dbLocation);
-
-    //var time = DateTime.Now.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
-    var backupPath = Path.Combine(directory.FullName, $"-backup.odb");
-
-    //var db = Locator.Current.GetService<AppDbManager>();
-    //await db.DoInterruptedOperationAsync(async () =>
-    //{
-    //  await Observable.Start(() =>
-    //  {
-    //    File.Copy(dbLocation, backupPath);
-    //  });
-    //});
-    File.Copy(dbLocation, backupPath);
+    var db = ServiceProvider.Current.GetService<IRepositoryManager>();
+    await db.DoInterruptedOperationAsync(async () =>
+    {
+      // TODO: Use a thread manager 
+      await Observable.Start(() => File.Copy(dbLocation, dbBackupLocation));
+    });
+    //File.Copy(dbLocation, dbBackupLocation);
   }
 }
