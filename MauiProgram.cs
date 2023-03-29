@@ -73,9 +73,8 @@ public static class MauiProgram
   public static MauiAppBuilder RegisterViewModels(this MauiAppBuilder self)
   {
     self.Services.AddSingleton<ViewModels.AllNotesViewModel>();
-
     self.Services.AddTransient<ViewModels.NoteViewModel>();
-
+    self.Services.AddSingleton<ViewModels.AboutViewModel>();
     return self;
   }
 
@@ -83,9 +82,7 @@ public static class MauiProgram
   {
     self.Services.AddSingleton<Views.AllNotesPage>();
     self.Services.AddSingleton<Views.AboutPage>();
-
     self.Services.AddTransient<Views.NotePage>();
-
     return self;
   }
 
