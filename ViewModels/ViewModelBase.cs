@@ -80,3 +80,22 @@ public abstract class ViewModelBase : BindableBase, IDisposable
   }
   #endregion
 }
+
+public abstract class ViewModelBase<TModel> : ViewModelBase where TModel : class
+{
+  TModel model;
+
+  public TModel Model
+  {
+    get { return model; }
+    set
+    {
+      model = value;
+      SetProperty(ref model, value);
+    }
+  }
+
+  protected ViewModelBase(INoteRepository repository, ILogger logger) : base(repository, logger)
+  {
+  }
+}
