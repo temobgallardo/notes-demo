@@ -81,7 +81,7 @@ public abstract class ViewModelBase : BindableBase, IDisposable
   #endregion
 }
 
-public abstract class ViewModelBase<TModel> : ViewModelBase where TModel : class
+public abstract class ViewModelBase<TModel> : ViewModelBase where TModel : class, new()
 {
   TModel model;
 
@@ -97,5 +97,6 @@ public abstract class ViewModelBase<TModel> : ViewModelBase where TModel : class
 
   protected ViewModelBase(INoteRepository repository, ILogger logger) : base(repository, logger)
   {
+    Model = new TModel();
   }
 }
