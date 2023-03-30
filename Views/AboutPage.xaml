@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:models="clr-namespace:FlyoutPageDemoMaui.Models"
+             xmlns:viewmodels="clr-namespace:FlyoutPageDemoMaui.ViewModels"
              x:Class="FlyoutPageDemoMaui.Views.AboutPage"
-             x:DataType="models:About"
+             x:DataType="viewmodels:AboutViewModel"
              Title="AboutPage">
-    <ContentPage.BindingContext>
-        <models:About />
-    </ContentPage.BindingContext>
     <VerticalStackLayout Spacing="10"
                          Margin="10">
         <HorizontalStackLayout Spacing="10">
@@ -16,21 +13,21 @@
                    HeightRequest="64" />
             <Label FontSize="22"
                    FontAttributes="Bold"
-                   Text="{Binding Title}"
+                   Text="{Binding Model.Title}"
                    VerticalOptions="End" />
             <Label FontSize="22"
-                   Text="{Binding Version}"
+                   Text="{Binding Model.Version}"
                    VerticalOptions="End" />
         </HorizontalStackLayout>
 
-        <Label Text="{Binding Message}" />
-        <Button Text="{Binding MoreInfoUrl}"
-                Clicked="LearnMore_Clicked" />
+        <Label Text="{Binding Model.Message}" />
+        <Button Text="{Binding Model.MoreInfoUrl}"
+                Command="{Binding OpenAboutCommand}" />
 
         <Grid ColumnDefinitions="Auto,*">
             <HorizontalStackLayout HorizontalOptions="Fill"
                                    Spacing="10">
-                <Switch IsToggled="{Binding IsShakeEnabled}" />
+                <Switch IsToggled="{Binding Model.IsShakeEnabled}" />
                 <Label Text="Shake to show logs!"
                        VerticalOptions="Center"
                        VerticalTextAlignment="Center" />
@@ -39,7 +36,10 @@
                     Grid.Column="1"
                     HorizontalOptions="End"
                     VerticalOptions="Center"
-                    Command="{Binding GoToLogsPageCommand}" />
+                    Command="{Binding Model.GoToLogsPageCommand}" />
         </Grid>
+
+        <Button Text="Backup and rebuild local database"
+                Command="{Binding BackupAndRebuildCommand}" />
     </VerticalStackLayout>
 </ContentPage>
