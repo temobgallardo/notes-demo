@@ -25,29 +25,34 @@ public class RepositoryManager : IRepositoryManager
     // You can't simply copy the file while it's open by LiteDB. You have to make sure the file is closed and that the log file is empty by running db.Checkpoint() before copying the file.
     await DoInterruptedOperationAsync(async () =>
     {
-      // TODO: Use a thread manager 
+      this.Logger.LogTrace("Backup started");
       await Observable.Start(() => File.Copy(dbLocation, dbBackupLocation));
+      this.Logger.LogTrace("Backup finished");
     });
 
+    this.Logger.LogTrace("Rebuild started");
     Repository.Context.Checkpoint();
     Repository.Context.Rebuild();
+    this.Logger.LogTrace("Rebuild finished");
 
     try
     {
       var recordsAfterBackup = await Repository.GetNotesAsync();
-      if (!recordsAfterBackup.Any() && recordsAfterBackup?.Count() != recordsBeforeBackup?.Count() && recordsAfterBackup != recordsBeforeBackup)
-      {
-        await DoInterruptedOperationAsync(async () =>
-        {
-          // TODO: Use a thread manager such as Rx or https://github.com/StephenClearyArchive/Nito.Asynchronous
-          await Observable.Start(() => File.Replace(dbBackupLocation, dbLocation, default));
-        
-        });
-      }
-      else
+      if (recordsAfterBackup.Any() && recordsAfterBackup?.Count() == recordsBeforeBackup?.Count() && recordsAfterBackup == recordsBeforeBackup)
       {
         File.Delete(dbBackupLocation);
+        return;
       }
+
+      this.Logger.LogTrace("Rebuild failed, restoring db");
+
+      await DoInterruptedOperationAsync(async () =>
+      {
+        this.Logger.LogTrace("Backup started");
+        // TODO: Use a thread manager such as Rx or https://github.com/StephenClearyArchive/Nito.Asynchronous
+        await Observable.Start(() => File.Replace(dbBackupLocation, dbLocation, default));
+        this.Logger.LogTrace("Backup started");
+      });
     }
     catch (Exception ex)
     {
